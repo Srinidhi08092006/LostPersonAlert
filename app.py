@@ -162,9 +162,15 @@ def register():
             conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
                          (username, generate_password_hash(password)))
             conn.commit()
-            flash('Registration successful! Please log in.', 'success')
+            
+            # Fetch the new user to auto-login
+            new_user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+            session['user_id'] = new_user['id']
+            session['username'] = new_user['username']
+            
+            flash('Registration successful! You are now logged in.', 'success')
             conn.close()
-            return redirect(url_for('login'))
+            return redirect(url_for('view_alerts'))
         conn.close()
         
     return render_template('register.html')
