@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container glass-panel">
+    <h2>Post Missing Person Alert</h2>
+    <p class="subtitle">Please provide accurate information to help the community.</p>
+
+    <form method="POST" action="{{ url_for('post_alert') }}" enctype="multipart/form-data" class="alert-form">
+        <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" required placeholder="e.g., Ramesh Kumar">
+        </div>
+        
+        <div class="form-group row">
+            <div class="col">
+                <label for="age">Age *</label>
+                <input type="number" id="age" name="age" required min="1" max="120">
+            </div>
+            <div class="col">
+                <label for="area">Chennai Area *</label>
+                <select id="area" name="area" required>
+                    <option value="" disabled selected>Select an area</option>
+                    {% for area in areas %}
+                    <option value="{{ area }}">{{ area }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="last_seen">Last Seen Location / Details *</label>
+            <textarea id="last_seen" name="last_seen" rows="3" required placeholder="Describe exactly where they were last seen..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Your Contact Number *</label>
+            <input type="tel" id="contact" name="contact" required placeholder="e.g., 9876543210">
+        </div>
+
+        <div class="form-group">
+            <label for="photo">Upload Photo (Optional but Recommended)</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary full-width">Post Emergency Alert</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

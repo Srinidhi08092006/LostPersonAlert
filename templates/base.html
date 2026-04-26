@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost Person Alert - Chennai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="{{ url_for('index') }}" class="logo">
+                <span class="logo-text">Alert<span class="highlight">Chennai</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('view_alerts') }}">View Alerts</a></li>
+                <li><a href="{{ url_for('live_camera') }}">Live Camera AI</a></li>
+                {% if session.user_id %}
+                    <li><a href="{{ url_for('post_alert') }}" class="btn-primary">Post Alert</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="btn-outline" style="padding: 0.5rem 1rem;">Logout ({{ session.username }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn-outline">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="btn-primary">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Lost Person Alert Portal. For Chennai City.</p>
+    </footer>
+</body>
+</html>

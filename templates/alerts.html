@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="alerts-header">
+    <h2>Active Alerts</h2>
+    
+    <form class="filter-form" method="GET" action="{{ url_for('view_alerts') }}">
+        <div class="filter-group">
+            <input type="text" name="search" placeholder="Search by name..." value="{{ search_query }}">
+            
+            <select name="age_group" onchange="this.form.submit()">
+                <option value="" {% if not age_group %}selected{% endif %}>All Ages</option>
+                <option value="child" {% if age_group == 'child' %}selected{% endif %}>Under 18</option>
+                <option value="adult" {% if age_group == 'adult' %}selected{% endif %}>18 - 59</option>
+                <option value="senior" {% if age_group == 'senior' %}selected{% endif %}>60+</option>
+            </select>
+            
+            <select name="area" onchange="this.form.submit()">
+                <option value="All Areas" {% if not selected_area or selected_area == 'All Areas' %}selected{% endif %}>All Areas</option>
+                {% for area in areas %}
+                <option value="{{ area }}" {% if selected_area == area %}selected{% endif %}>{{ area }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn-primary search-btn">Search</button>
+        </div>
+    </form>
+</div>
+
+{% if alerts %}
+<div class="alerts-grid">
+    {% for alert in alerts %}
+    <div class="alert-card {% if alert.status == 'found' %}status-found{% endif %}">
+        <div class="card-header">
+            <span class="badge {% if alert.status == 'found' %}badge-success{% else %}badge-danger{% endif %}">
+                {{ alert.status|upper }}
+            </span>
+            <span class="area-tag"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg> {{ alert.area }}</span>
+        </div>
+        
+        <div class="card-image-wrap">
+            {% if alert.photo %}
+            <img src="{{ url_for('static', filename='uploads/' + alert.photo) }}" alt="Photo of {{ alert.name }}" class="alert-photo">
+            {% else %}
+            <div class="no-photo">No Photo Provided</div>
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            <h3>{{ alert.name }} <span class="age">({{ alert.age }} yrs)</span></h3>
+            
+            <div class="info-group">
+                <strong>Last Seen:</strong>
+                <p>{{ alert.last_seen }} 
+                   {% if alert.is_iot_updated %}
+                   <span class="iot-badge" style="background-color: rgba(255, 71, 87, 0.15); color: #ff4757; border-color: #ff4757; animation: pulseBorder 1.5s infinite;" title="Automatically updated via AI Live Camera">🚨 SPOTTED BY CAMERA 🚨</span>
+                   {% endif %}
+                </p>
+            </div>
+            
+            <div class="info-group contact">
+                <strong>Contact:</strong>
+                <p>📞 {{ alert.contact }}</p>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            {% if alert.status == 'active' %}
+                {% if session.user_id == alert.user_id or session.username == 'admin' %}
+                    <a href="{{ url_for('edit_alert', id=alert.id) }}" class="btn-outline">Edit</a>
+                    <form method="POST" action="{{ url_for('mark_found', id=alert.id) }}" style="display:inline;">
+                        <button type="submit" class="btn-success" onclick="return confirm('Are you sure this person has been found?');">Mark Found</button>
+                    </form>
+                {% endif %}
+                <a href="{{ url_for('print_poster', id=alert.id) }}" target="_blank" class="btn-secondary" style="padding: 8px; flex: 0.5; text-align: center;">🖨️</a>
+            {% else %}
+                <p class="found-text">Safe & Found</p>
+                <a href="{{ url_for('print_poster', id=alert.id) }}" target="_blank" class="btn-outline" style="padding: 8px; flex: 0.5; text-align: center;">🖨️ Print</a>
+            {% endif %}
+        </div>
+        {% if session.username == 'admin' %}
+        <div class="card-footer" style="padding-top: 0; background: rgba(0,0,0,0.1); border-top: none;">
+            <form method="POST" action="{{ url_for('delete_alert', id=alert.id) }}" style="width: 100%; display: flex;">
+                <button type="submit" class="btn-primary" style="flex: 1; padding: 8px; background-color: transparent; border: 1px solid #ff4757; color: #ff4757; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#ff4757'; this.style.color='white';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff4757';" onclick="return confirm('ADMIN ACTION: Permanently delete this alert from the database?');">🗑️ Delete Suspicious Alert</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="icon-wrap">🙏</div>
+    <h3>No active alerts.</h3>
+    <p>Good news! There are currently no missing person alerts for this selection.</p>
+</div>
+{% endif %}
+{% endblock %}

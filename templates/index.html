@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero">
+    <h1>Help Find Missing Persons in Chennai</h1>
+    <p>A dedicated portal for high-crowd areas: T Nagar, Koyambedu, Central Station, Marina Beach, and Tambaram.</p>
+    <div class="hero-actions">
+        <a href="{{ url_for('post_alert') }}" class="btn-primary">Post New Alert</a>
+        <a href="{{ url_for('view_alerts') }}" class="btn-secondary">View Emergency Alerts</a>
+    </div>
+</div>
+
+<div class="dashboard-stats glass-panel">
+    <div class="stat-card">
+        <h3 class="stat-title">Active Cases</h3>
+        <p class="stat-number text-danger">{{ total_active }}</p>
+    </div>
+    <div class="stat-card">
+        <h3 class="stat-title">Safely Found</h3>
+        <p class="stat-number text-success">{{ total_found }}</p>
+    </div>
+    <div class="stat-card area-stats">
+        <h3 class="stat-title">Active by Area</h3>
+        <div class="area-list">
+            {% for area, count in area_counts.items() %}
+            <div class="area-stat-item">
+                <span>{{ area }}</span> 
+                <strong class="{% if count > 0 %}text-danger{% endif %}">{{ count }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <h3>📍 Localized</h3>
+        <p>Focused exclusively on high-traffic areas in Chennai for faster community response.</p>
+    </div>
+    <div class="feature-card">
+        <h3>⚡ Quick Action</h3>
+        <p>Post an alert in seconds with essential details and photos.</p>
+    </div>
+    <div class="feature-card">
+        <h3>🤝 Community Driven</h3>
+        <p>Help your neighbors. Check alerts if you are in these high-crowd areas.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="video-container glass-panel" style="text-align: center; margin-top: 2rem; padding: 2rem;">
+    <h2>Live AI Camera Feed</h2>
+    <p>Real-time missing person identification system using Automated Face Recognition.</p>
+    
+    <div style="margin: 1.5rem auto; border: 4px solid #E2E8F0; border-radius: 12px; overflow: hidden; display: inline-block; background-color: #000;">
+        <img id="videoStream" src="{{ url_for('video_feed') }}" alt="Live Camera Stream" style="width: 100%; max-width: 640px; border-radius: 8px;">
+    </div>
+    
+    <div style="margin-top: 1rem;">
+        <a href="{{ url_for('view_alerts') }}" class="btn-primary">View Current Alerts</a>
+    </div>
+</div>
+
+<script>
+    // Handle error if webcam is not accessible
+    document.getElementById('videoStream').addEventListener('error', function() {
+        this.style.display = 'none';
+        let errorMsg = document.createElement('div');
+        errorMsg.innerHTML = '<p style="color: red; padding: 2rem;">Unable to access the webcam. Please ensure it is connected and not being used by another application.</p>';
+        this.parentElement.appendChild(errorMsg);
+    });
+</script>
+{% endblock %}
